@@ -47,7 +47,7 @@
       "post": {
         "operationId": "CreateAccount",
         "summary": "Create Account",
-        "description": "Creates a physical account. It accepts accountOwner type and id as required body parameters. Nickname is an optional parameter\n\n ### Example request body:\n```JSON\n{\n  \"nickname\": \"Operating account\",\n  \"accountOwner\": {\n    \"type\": \"INDIVIDUAL\",\n    \"id\": \"hkHcJybfBAKjZac5eiBAr\"\n  }\n}\n```\n\n### Example response body:\n```JSON\n{\n  \"id\": \"GB-040075-87654321\",\n  \"currency\": \"GBP\",\n  \"type\": \"OPERATING\",\n  \"accountOwner\": {\n    \"type\": \"INDIVIDUAL\",\n    \"id\": \"hkHcJybfBAKjZac5eiBAr\"\n  }\n}\n```",
+        "description": "Creates a Physical Account. Physical accounts can be created for Individuals and Organisations. It accepts accountOwner type, account type and id as required body parameters. Nickname and salesProductId are optional parameters.\n\n ### Example request body:\n```JSON\n{\n  \"type\": \"BAAS_PHYSICAL_ACCOUNT\",\n  \"accountOwner\": {\n    \"type\": \"INDIVIDUAL\",\n    \"id\": \"hkHcJybfBAKjZac5eiBAr\"\n  }\n}\n```\n\n### Example response body:\n```JSON\n{\n  \"id\": \"GB-040075-87654321\",\n  \"currency\": \"GBP\",\n  \"type\": \"BAAS_PHYSICAL_ACCOUNT\",\n  \"accountOwner\": {\n    \"type\": \"INDIVIDUAL\",\n    \"id\": \"hkHcJybfBAKjZac5eiBAr\"\n  }\n}\n```",
         "parameters": [
           {
             "$ref": "#/components/parameters/JwsSignature"
@@ -262,7 +262,7 @@
       "patch": {
         "operationId": "UpdateAccount",
         "summary": "Update Account",
-        "description": "This operation updates an account by its `id` in the context of\nan application registered with The Bank of London Developer Studio. \n\nAt present, only the nickname can be updated.\n\n### Example request body:\n```JSON\n{\n  \"nickname\": \"Business Transactions\"\n}\n```\n\nThe API will return the updated account.\n\n### Example response:\n```JSON\n{\n  \"id\": \"GB-040075-12345678\",\n  \"createdDateTime\": \"2022-01-30T08:30:00Z\",\n  \"currency\": \"GBP\",\n  \"balances\": {\n    \"available\": 1000,\n    \"current\":  2000\n  },\n  \"totals\": {\n    \"totalMonthlyCreditInterestAccrued\": 0,\n    \"totalCreditInterestPaid\": 0,\n    \"totalCreditsCurrentMonth\": 0,\n    \"totalDebitsCurrentMonth\": 0\n  },\n  \"accountHolderName\": \"John Smith\",\n  \"nickname\": \"Business Transactions\",\n  \"status\": {\n    \"identifier\": \"ACTIVE\"\n  },\n  \"countryCode\": \"GB\",\n  \"identifiers\": {\n    {...}\n  },\n  \"type\": \"OPERATING\",\n  \"lockType\": \"NONE\",\n  \"limits\": {\n    \"minimumLimit\": 0\n  },\n  \"constraints\": {\n    \"withdrawal\": {\n      \"nominatedPayees\": [\n        {\n          \"accountNumber\": \"00000001\",\n          \"name\": \"Company LTD.\",\n          \"sortCode\": \"042974\"\n        }\n      ],\n      \"noticePeriod\": {\n        \"duration\": 3,\n        \"unitOfTime\": \"WEEK\"\n      }\n    }\n  \"accountOwner\": {\n    \"type\": \"INDIVIDUAL\",\n    \"id\": \"kPRkRLVrOYGasouzr4hz8\"\n  }\n}\n```",
+        "description": "This operation updates an account by its `id` in the context of\nan application registered with The Bank of London Developer Studio. \n\nAt present, only the nickname and salesProductId can be updated.\n\n### Example request body:\n```JSON\n{\n  \"nickname\": \"Business Transactions\"\n}\n```\n\nThe API will return the updated account.\n\n### Example response:\n```JSON\n{\n  \"id\": \"GB-040075-12345678\",\n  \"createdDateTime\": \"2022-01-30T08:30:00Z\",\n  \"currency\": \"GBP\",\n  \"balances\": {\n    \"available\": 1000,\n    \"current\":  2000\n  },\n  \"totals\": {\n    \"totalMonthlyCreditInterestAccrued\": 0,\n    \"totalCreditInterestPaid\": 0,\n    \"totalCreditsCurrentMonth\": 0,\n    \"totalDebitsCurrentMonth\": 0\n  },\n  \"accountHolderName\": \"John Smith\",\n  \"nickname\": \"Business Transactions\",\n  \"status\": {\n    \"identifier\": \"ACTIVE\"\n  },\n  \"countryCode\": \"GB\",\n  \"identifiers\": {\n    {...}\n  },\n  \"type\": \"OPERATING\",\n  \"lockType\": \"NONE\",\n  \"limits\": {\n    \"minimumLimit\": 0\n  },\n  \"constraints\": {\n    \"withdrawal\": {\n      \"nominatedPayees\": [\n        {\n          \"accountNumber\": \"00000001\",\n          \"name\": \"Company LTD.\",\n          \"sortCode\": \"042974\"\n        }\n      ],\n      \"noticePeriod\": {\n        \"duration\": 3,\n        \"unitOfTime\": \"WEEK\"\n      }\n    }\n  \"accountOwner\": {\n    \"type\": \"INDIVIDUAL\",\n    \"id\": \"kPRkRLVrOYGasouzr4hz8\"\n  }\n}\n```",
         "parameters": [
           {
             "in": "path",
@@ -303,6 +303,77 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetSingleAccountResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "422": {
+            "$ref": "#/components/responses/422"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        },
+        "tags": ["Accounts"]
+      }
+    },
+    "/v2/accounts/{id}/close": {
+      "post": {
+        "operationId": "CloseAccount",
+        "summary": "Close Account",
+        "description": "Closes a Physical Account. This operation is only applicable to `BAAS_PHYSICAL_ACCOUNT` type accounts.\n\n ### Example request body:\n```JSON\n{\n  \"closureReason\": \"CUST_INITIATED\",\n  \"recipient\": {\n    \"type\": \"UK\",\n    \"accountHolderName\": \"John Smith\",\n    \"sortCode\": \"123456\",\n    \"accountNumber\": \"12345678\"\n  }\n}\n```\n\n### Example response body:\n```JSON\n{\n  \"id\": \"GB-040075-87654321\",\n  \"type\": \"BAAS_PHYSICAL_ACCOUNT\",\n  \"status\": {\n    \"identifier\": \"CLOSED\",\n  }\n}\n```",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/AccountId"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/JwsSignature"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloseAccountRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account created successfully",
+            "headers": {
+              "x-correlation-id": {
+                "description": "A unique identifier assigned to each request, facilitating issue tracing. In the event that a problem arises with a request, this ID can be provided to The Bank of London support team for assistance.",
+                "schema": {
+                  "type": "string"
+                },
+                "example": "2579248247516384065",
+                "required": true
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CloseAccountResponse"
                 }
               }
             }
@@ -4261,7 +4332,8 @@
           "INSTANT_ACCESS_DEPOSIT",
           "NOTICE_DEPOSIT",
           "OPERATING",
-          "SEGREGATED"
+          "SEGREGATED",
+          "BAAS_PHYSICAL_ACCOUNT"
         ]
       },
       "AccountOwnership": {
@@ -4326,6 +4398,15 @@
                   "identifier": {
                     "enum": ["INACTIVE"],
                     "description": "Account is inactive and cannot be used to process payments."
+                  }
+                }
+              },
+              {
+                "title": "CLOSED",
+                "properties": {
+                  "identifier": {
+                    "enum": ["CLOSED"],
+                    "description": "Account is closed."
                   }
                 }
               }
@@ -4405,6 +4486,7 @@
       },
       "AccountNickname": {
         "type": "string",
+        "nullable": true,
         "description": "User defined name to identify the account.",
         "example": "Business transactions",
         "minLength": 1,
@@ -4533,6 +4615,12 @@
         "required": ["type", "id"],
         "nullable": true
       },
+      "SalesProductId": {
+        "type": "string",
+        "nullable": true,
+        "description": "Used to define the interest rate for the account.\n\nNote: Sales product IDs are client specific and must be pre-configured. Please contact us at client.partners@thebankoflondon.com to configure them for you.\n",
+        "example": "COMP_SP1"
+      },
       "BaseAccount": {
         "properties": {
           "id": {
@@ -4582,6 +4670,9 @@
           },
           "accountOwner": {
             "$ref": "#/components/schemas/NullableAccountOwner"
+          },
+          "salesProductId": {
+            "$ref": "#/components/schemas/SalesProductId"
           }
         },
         "required": [
@@ -4769,6 +4860,11 @@
           }
         ]
       },
+      "PhysicalAccountType": {
+        "type": "string",
+        "description": "<span style=\"color:#f46d2a\">**Attention**</span> \\\nPlease note that the allowed values for the **type** are\nextensible and new can be added in the future without a\nmajor version change. Please ensure this is factored into your\napplication code.\n\nThe type of account to be created. \\\n`BAAS_PHYSICAL_ACCOUNT`: A physical account assigned to clients customers, (Individual or Organisation).\n",
+        "enum": ["BAAS_PHYSICAL_ACCOUNT"]
+      },
       "AccountOwner": {
         "type": "object",
         "description": "Owner of the account.",
@@ -4791,14 +4887,20 @@
         "title": "Create Account Request",
         "description": "Request object that is required to create an account",
         "properties": {
-          "nickname": {
-            "$ref": "#/components/schemas/AccountNickname"
+          "type": {
+            "$ref": "#/components/schemas/PhysicalAccountType"
           },
           "accountOwner": {
             "$ref": "#/components/schemas/AccountOwner"
+          },
+          "nickname": {
+            "$ref": "#/components/schemas/AccountNickname"
+          },
+          "salesProductId": {
+            "$ref": "#/components/schemas/SalesProductId"
           }
         },
-        "required": ["accountOwner"]
+        "required": ["type", "accountOwner"]
       },
       "CreateAccountResponse": {
         "type": "object",
@@ -4814,12 +4916,16 @@
             "$ref": "#/components/schemas/Currency"
           },
           "type": {
-            "type": "string",
-            "enum": ["OPERATING"],
-            "description": "Type of account. \\\n`OPERATING`: Operating account.\n"
+            "$ref": "#/components/schemas/PhysicalAccountType"
           },
           "accountOwner": {
             "$ref": "#/components/schemas/AccountOwner"
+          },
+          "nickname": {
+            "$ref": "#/components/schemas/AccountNickname"
+          },
+          "salesProductId": {
+            "$ref": "#/components/schemas/SalesProductId"
           }
         },
         "required": ["id", "currency", "type", "accountOwner"]
@@ -4920,9 +5026,83 @@
         "properties": {
           "nickname": {
             "$ref": "#/components/schemas/AccountNickname"
+          },
+          "salesProductId": {
+            "$ref": "#/components/schemas/SalesProductId"
+          }
+        }
+      },
+      "PhysicalAccountClosureReason": {
+        "type": "string",
+        "description": "<span style=\"color:#f46d2a\">**Attention**</span> \\\nPlease note that the allowed values for the **type** are\nextensible and new can be added in the future without a\nmajor version change. Please ensure this is factored into your\napplication code.\n\nThe reason for the account cloosure. \\\n`CUST_INITIATED`: Customer initiated the closure of the account. \\\n`CUST_DECEASED`: Customer is deceased. \\\n`FRAUD_AML`: Account or customer linked to fraud. \\\n`ACCT_TRANSFER`: Account was transferred to another bank. \\\n",
+        "enum": ["CUST_INITIATED", "CUST_DECEASED", "FRAUD_AML", "ACCT_TRANSFER"]
+      },
+      "AccountIdentifierUk": {
+        "type": "object",
+        "title": "UK",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["UK"]
+          },
+          "sortCode": {
+            "$ref": "#/components/schemas/UkSortCode"
+          },
+          "accountNumber": {
+            "$ref": "#/components/schemas/UkAccountNumber"
+          },
+          "accountHolderName": {
+            "$ref": "#/components/schemas/AccountHolderName"
           }
         },
-        "required": ["nickname"]
+        "required": ["type", "sortCode", "accountNumber", "accountHolderName"]
+      },
+      "CloseAccountRequest": {
+        "type": "object",
+        "title": "Create Account Request",
+        "description": "Request object that is required to close an account",
+        "properties": {
+          "closureReason": {
+            "$ref": "#/components/schemas/PhysicalAccountClosureReason"
+          },
+          "recipient": {
+            "description": "Account details where the remaining balance of the\nclosed account, any pending interest or transactions (if applicable)\nwill be transferred to. The account must be a UK bank account.\n\n<span style=\"color:#f46d2a\">**Attention**</span> \\\nPlease note that the recipient is a oneOf object linked to the **type** in the object. \nCurrently `UK` is the only available oneOf object\nbut the **recipient** oneOf is extensible and new recipient types can be added in the future without a\nmajor version change. Please ensure this is factored into your\napplication code.\n\nRepresents the details of the payment recipient.\n",
+            "allOf": [
+              {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/AccountIdentifierUk"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "required": ["closureReason", "recipient"]
+      },
+      "CloseAccountResponse": {
+        "type": "object",
+        "title": "Close Account Response",
+        "description": "Close account response object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The account identifier of the closed account.",
+            "example": "GB-040075-87654321"
+          },
+          "status": {
+            "type": "object",
+            "properties": {
+              "identifier": {
+                "type": "string",
+                "description": "The status of the account",
+                "example": "CLOSED",
+                "enum": ["CLOSED"]
+              }
+            }
+          }
+        },
+        "required": ["id", "status"]
       },
       "OrganisationId": {
         "type": "string",
@@ -6964,26 +7144,6 @@
             }
           }
         ]
-      },
-      "AccountIdentifierUk": {
-        "type": "object",
-        "title": "UK",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": ["UK"]
-          },
-          "sortCode": {
-            "$ref": "#/components/schemas/UkSortCode"
-          },
-          "accountNumber": {
-            "$ref": "#/components/schemas/UkAccountNumber"
-          },
-          "accountHolderName": {
-            "$ref": "#/components/schemas/AccountHolderName"
-          }
-        },
-        "required": ["type", "sortCode", "accountNumber", "accountHolderName"]
       },
       "PaymentRecipient": {
         "description": "<span style=\"color:#f46d2a\">**Attention**</span> \\\nPlease note that the recipient is a oneOf object linked to the **type** in the object. \nCurrently `UK` is the only available oneOf object\nbut the **recipient** oneOf is extensible and new recipient types can be added in the future without a\nmajor version change. Please ensure this is factored into your\napplication code.\n\nRepresents the details of the payment recipient.\n",
